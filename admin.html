@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Administrativo - CIA</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e0e7ff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: saturate(180%) blur(10px);
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #0deefd;
+    }
+
+    main {
+      flex: 1;
+      max-width: 960px;
+      margin: 3rem auto;
+      width: 90%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Login form styles */
+    #loginForm {
+      background: rgba(15, 23, 42, 0.85);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: inset 0 0 12px #14b8a6;
+      max-width: 400px;
+      margin: 6rem auto;
+      text-align: center;
+    }
+
+    #loginForm h2 {
+      margin-bottom: 1.5rem;
+      color: #22d3ee;
+    }
+
+    #loginForm label {
+      display: block;
+      margin-bottom: 0.5rem;
+      text-align: left;
+      font-weight: 500;
+      color: #a3bffa;
+    }
+
+    #loginForm input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #loginForm button {
+      background: linear-gradient(135deg, #14b8a6, #0f766e);
+      color: #ffffff;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.6);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    #loginForm button:hover,
+    #loginForm button:focus {
+      background: linear-gradient(135deg, #0f766e, #14b8a6);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    #loginForm a {
+      text-decoration: none;
+      color: white;
+    }
+
+    #loginForm a:hover {
+      color: lightgreen;
+    }
+
+    #loginError {
+      color: #f87171;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    /* Admin panel */
+    #adminPanel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2,
+    h3 {
+      color: #22d3ee;
+    }
+
+    /* Event form */
+    form {
+      background: rgba(15, 23, 42, 0.85);
+      padding: 1.5rem 2rem;
+      border-radius: 20px;
+      box-shadow: inset 0 0 18px #14b8a6;
+      margin-bottom: 2rem;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #a3bffa;
+    }
+
+    form input[type="text"],
+    form input[type="date"],
+    form input[type="time"],
+    form textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.25rem;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      resize: vertical;
+    }
+
+    form textarea {
+      min-height: 80px;
+    }
+
+    form button {
+      background: linear-gradient(135deg, yellow, #0f766e);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.75rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.6);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    form button:hover,
+    form button:focus {
+      background: linear-gradient(135deg, #0f766e, yellow);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    /* Event list */
+    #eventList {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      box-shadow: inset 0 0 18px #14b8a6;
+    }
+
+    #eventList ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #eventList li {
+      background: rgba(20, 184, 166, 0.1);
+      margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      color: #cbd5e1;
+    }
+
+    #eventList li div {
+      flex: 1 1 70%;
+      min-width: 200px;
+    }
+
+    #eventList li strong {
+      color: #22d3ee;
+      font-weight: 700;
+    }
+
+    #eventList li span {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    #eventList li button {
+      background: none;
+      border: 2px solid #14b8a6;
+      color: #14b8a6;
+      border-radius: 12px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      transition: background 0.3s ease, color 0.3s ease;
+      flex: 0 0 auto;
+    }
+
+    #eventList li button:hover,
+    #eventList li button:focus {
+      background: #14b8a6;
+      color: #0f172a;
+      outline: none;
+    }
+
+    #eventForm a {
+      text-decoration: none;
+      color: white;
+    }
+
+    #eventForm a:hover {
+      color: lightgreen;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      #eventList li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #eventList li button {
+        margin: 0.5rem 0 0 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Panel Administrativo - CIA</h1>
+  </header>
+
+  <main>
+
+    <!-- Login Form -->
+    <section id="loginForm" aria-label="Formulario de acceso administradores">
+      <h2>Iniciar sesión</h2>
+      <label for="adminPassword">Ingrese la contraseña</label>
+      <input type="password" id="adminPassword" aria-required="true" autocomplete="current-password" />
+      <button id="loginBtn" aria-label="Iniciar sesión">Acceder</button>
+      <br>
+      <br>
+      <a href="cia-eventos.html">Regresar al inicio</a>
+      <div id="loginError" role="alert" aria-live="assertive"></div>
+    </section>
+
+    <!-- Administrative Panel -->
+    <section id="adminPanel" class="hidden" aria-label="Panel de administración de eventos">
+      <h2>Gestión de Eventos</h2>
+
+      <!-- Add/Edit Event Form -->
+      <form id="eventForm" aria-label="Formulario para agregar o editar evento">
+        <h3 id="formTitle">Agregar nuevo evento</h3>
+
+        <label for="eventTitle">Título del evento</label>
+        <input type="text" id="eventTitle" name="title" required aria-required="true" />
+
+        <label for="eventDate">Fecha</label>
+        <input type="date" id="eventDate" name="date" required aria-required="true" />
+
+        <label for="eventTime">Hora</label>
+        <input type="time" id="eventTime" name="time" required aria-required="true" />
+
+        <label for="eventDescription">Descripción</label>
+        <textarea id="eventDescription" name="description" required aria-required="true"></textarea>
+
+        <button type="submit" id="submitBtn" aria-label="Guardar evento">Agregar Evento</button>
+        <button type="button" id="cancelEditBtn" class="hidden" aria-label="Cancelar edición">Cancelar</button>
+
+        <br>
+        <br>
+        <a href="cia-eventos.html">Regresar al inicio</a>
+      </form>
+
+      <!-- Event List -->
+      <section id="eventList" aria-live="polite" aria-atomic="true" aria-relevant="all" tabindex="0">
+        <h3>Eventos Existentes</h3>
+        <ul id="eventsUl" aria-label="Lista de eventos registrados"></ul>
+      </section>
+
+      <!-- Mensajes recibidos desde CIA-eventos.html -->
+      <section id="messagesSection" aria-label="Mensajes recibidos">
+        <h2>Mensajes de Contacto</h2>
+        <div id="messagesList">
+          <p>No hay mensajes recibidos.</p>
+        </div>
+      </section>
+      <script>
+        // Cargar mensajes desde localStorage
+        function loadMessages() {
+          const stored = localStorage.getItem('cia_contact_msgs');
+          let messages = [];
+          if (stored) {
+            try {
+              messages = JSON.parse(stored);
+            } catch {
+              messages = [];
+            }
+          }
+          return messages;
+        }
+
+        // Guardar mensajes en localStorage
+        function saveMessages(messages) {
+          localStorage.setItem('cia_contact_msgs', JSON.stringify(messages));
+        }
+
+        // Eliminar mensaje por índice
+        function deleteMessage(index) {
+          let messages = loadMessages();
+          if (index >= 0 && index < messages.length) {
+            if (confirm('¿Está seguro de eliminar este mensaje?')) {
+              messages.splice(index, 1);
+              saveMessages(messages);
+              renderMessages();
+            }
+          }
+        }
+
+        // Renderizar mensajes en la sección
+        function renderMessages() {
+          const messages = loadMessages();
+          const messagesList = document.getElementById('messagesList');
+          messagesList.innerHTML = '';
+          if (!messages.length) {
+            messagesList.innerHTML = '<p>No hay mensajes recibidos.</p>';
+            return;
+          }
+          const ul = document.createElement('ul');
+          ul.style.listStyle = 'none';
+          ul.style.padding = '0';
+          messages.forEach((msg, idx) => {
+            const li = document.createElement('li');
+            li.style.background = 'rgba(20,184,166,0.08)';
+            li.style.marginBottom = '1rem';
+            li.style.padding = '1rem';
+            li.style.borderRadius = '12px';
+            li.innerHTML = `
+          <strong>Nombre:</strong> ${msg.nombre || 'Sin nombre'}<br>
+          <strong>Email:</strong> ${msg.email || 'Sin email'}<br>
+          <strong>Mensaje:</strong><br>
+          <span>${msg.mensaje || ''}</span>
+          <br>
+          <small>Fecha: ${msg.fecha || 'Desconocida'}</small>
+        `;
+            // Botón eliminar
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Eliminar';
+            delBtn.style.marginTop = '0.5rem';
+            delBtn.style.background = 'none';
+            delBtn.style.border = '2px solid #f87171';
+            delBtn.style.color = '#f87171';
+            delBtn.style.borderRadius = '8px';
+            delBtn.style.padding = '0.3rem 0.9rem';
+            delBtn.style.fontWeight = '600';
+            delBtn.style.cursor = 'pointer';
+            delBtn.setAttribute('aria-label', 'Eliminar mensaje');
+            delBtn.addEventListener('click', () => deleteMessage(idx));
+            li.appendChild(document.createElement('br'));
+            li.appendChild(delBtn);
+            ul.appendChild(li);
+          });
+          messagesList.appendChild(ul);
+        }
+      </script>
+
+      <!-- Sección de Estado de Pago de Boletos -->
+      <section id="ticketStatusSection" aria-label="Estado de pago de boletos">
+        <h2>Estado de Pago de Boletos</h2>
+        <div id="ticketStatusList">
+          <p>No hay registros de boletos.</p>
+        </div>
+      </section>
+      <script>
+        // Cargar boletos desde localStorage
+        function loadTickets() {
+          const stored = localStorage.getItem('cia_tickets');
+          let tickets = [];
+          if (stored) {
+            try {
+              tickets = JSON.parse(stored);
+            } catch {
+              tickets = [];
+            }
+          }
+          return tickets;
+        }
+
+        // Guardar boletos en localStorage
+        function saveTickets(tickets) {
+          localStorage.setItem('cia_tickets', JSON.stringify(tickets));
+        }
+
+        // Cambiar estado de pago
+        function toggleTicketPaid(index) {
+          let tickets = loadTickets();
+          if (index >= 0 && index < tickets.length) {
+            tickets[index].pagado = !tickets[index].pagado;
+            saveTickets(tickets);
+            renderTickets();
+          }
+        }
+
+        // Eliminar boleto
+        function deleteTicket(index) {
+          let tickets = loadTickets();
+          if (index >= 0 && index < tickets.length) {
+            if (confirm('¿Está seguro de eliminar este boleto?')) {
+              tickets.splice(index, 1);
+              saveTickets(tickets);
+              renderTickets();
+            }
+          }
+        }
+
+        // Renderizar boletos (solo mostrar estado de pago si el método es "Efectivo")
+        function renderTickets() {
+          const tickets = loadTickets();
+          const ticketStatusList = document.getElementById('ticketStatusList');
+          ticketStatusList.innerHTML = '';
+          if (!tickets.length) {
+            ticketStatusList.innerHTML = '<p>No hay registros de boletos.</p>';
+            return;
+          }
+          const ul = document.createElement('ul');
+          ul.style.listStyle = 'none';
+          ul.style.padding = '0';
+          tickets.forEach((ticket, idx) => {
+            const li = document.createElement('li');
+            li.style.background = 'rgba(253,224,71,0.08)';
+            li.style.marginBottom = '1rem';
+            li.style.padding = '1rem';
+            li.style.borderRadius = '12px';
+            li.innerHTML = `
+          <strong>Nombre:</strong> ${ticket.title || 'Sin nombre'}<br>
+          <strong>Email:</strong> ${ticket.email || 'Sin email'}<br>
+          <strong>Evento:</strong> ${ticket.title || 'Sin evento'}<br>
+          <strong>Cantidad:</strong> ${ticket.cantidad || 1}<br>
+          <strong>Método de pago:</strong> ${ticket.metodo || 'Desconocido'}
+          <br>
+          <small>Fecha de compra: ${ticket.fecha || 'Desconocida'}</small>
+        `;
+            // Solo mostrar estado de pago y botón si el método es "Efectivo"
+            if (ticket.metodo && ticket.metodo.toLowerCase() === 'efectivo') {
+              const pagadoSpan = document.createElement('span');
+              pagadoSpan.innerHTML = `<strong>Pagado:</strong> <span style="color:${ticket.pagado ? '#22c55e' : '#f87171'};font-weight:600">${ticket.pagado ? 'Sí' : 'No'}</span>`;
+              li.appendChild(document.createElement('br'));
+              li.appendChild(pagadoSpan);
+
+              // Botón cambiar estado de pago
+              const payBtn = document.createElement('button');
+              payBtn.textContent = ticket.pagado ? 'Marcar como NO pagado' : 'Marcar como pagado';
+              payBtn.style.marginTop = '0.5rem';
+              payBtn.style.background = 'none';
+              payBtn.style.border = '2px solid #22c55e';
+              payBtn.style.color = '#22c55e';
+              payBtn.style.borderRadius = '8px';
+              payBtn.style.padding = '0.3rem 0.9rem';
+              payBtn.style.fontWeight = '600';
+              payBtn.style.cursor = 'pointer';
+              payBtn.setAttribute('aria-label', 'Cambiar estado de pago');
+              payBtn.addEventListener('click', () => toggleTicketPaid(idx));
+              li.appendChild(document.createElement('br'));
+              li.appendChild(payBtn);
+            }
+
+            // Botón eliminar (siempre disponible)
+            const delBtn = document.createElement('button');
+            delBtn.textContent = 'Eliminar';
+            delBtn.style.marginLeft = '0.5rem';
+            delBtn.style.background = 'none';
+            delBtn.style.border = '2px solid #f87171';
+            delBtn.style.color = '#f87171';
+            delBtn.style.borderRadius = '8px';
+            delBtn.style.padding = '0.3rem 0.9rem';
+            delBtn.style.fontWeight = '600';
+            delBtn.style.cursor = 'pointer';
+            delBtn.setAttribute('aria-label', 'Eliminar boleto');
+            delBtn.addEventListener('click', () => deleteTicket(idx));
+            li.appendChild(delBtn);
+
+            ul.appendChild(li);
+          });
+          ticketStatusList.appendChild(ul);
+        }
+      </script>
+    </section>
+
+  </main>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const adminPanel = document.getElementById('adminPanel');
+    const loginBtn = document.getElementById('loginBtn');
+    const adminPasswordInput = document.getElementById('adminPassword');
+    const loginError = document.getElementById('loginError');
+
+    const eventForm = document.getElementById('eventForm');
+    const formTitle = document.getElementById('formTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    const eventsUl = document.getElementById('eventsUl');
+
+
+    // Simple hardcoded password, for demo only
+    const ADMIN_PASSWORD = 'Admin';
+
+    // Render tickets al mostrar panel admin
+    function tryRenderTicketsOnLogin() {
+      setTimeout(renderTickets, 100);
+    }
+
+    // Integrar con login
+    loginBtn.addEventListener('click', tryRenderTicketsOnLogin);
+    adminPasswordInput.addEventListener('keyup', e => {
+      if (e.key === 'Enter') tryRenderTicketsOnLogin();
+    });
+
+    // Agrega esto al final, luego de haber definido `adminPasswordInput`
+
+    loginBtn.addEventListener('click', () => {
+      setTimeout(renderMessages, 100);
+    });
+
+    adminPasswordInput.addEventListener('keyup', e => {
+      if (e.key === 'Enter') setTimeout(renderMessages, 100);
+    });
+
+
+
+    // State variables
+    let events = [];
+    let editingEventId = null;
+
+    // Load events from localStorage if any
+    function loadEvents() {
+      const stored = localStorage.getItem('cia_events');
+      if (stored) {
+        try {
+          events = JSON.parse(stored);
+        } catch {
+          events = [];
+        }
+      } else {
+        events = [];
+      }
+    }
+
+    // Save events to localStorage
+    function saveEvents() {
+      localStorage.setItem('cia_events', JSON.stringify(events));
+    }
+
+    // Render events list
+    function renderEvents() {
+      eventsUl.innerHTML = '';
+      if (events.length === 0) {
+        const noEventsMsg = document.createElement('p');
+        noEventsMsg.textContent = 'No hay eventos registrados.';
+        eventsUl.appendChild(noEventsMsg);
+        return;
+      }
+      events.forEach(event => {
+        const li = document.createElement('li');
+        li.setAttribute('tabindex', '0');
+
+        const detailsDiv = document.createElement('div');
+        detailsDiv.innerHTML = `<strong>${event.title}</strong>
+        <span>Fecha: ${event.date} - Hora: ${event.time}</span>
+        <span>${event.description}</span>`;
+        li.appendChild(detailsDiv);
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Editar';
+        editBtn.setAttribute('aria-label', `Editar evento ${event.title}`);
+        editBtn.addEventListener('click', () => startEditEvent(event.id));
+        li.appendChild(editBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Eliminar';
+        delBtn.setAttribute('aria-label', `Eliminar evento ${event.title}`);
+        delBtn.addEventListener('click', () => deleteEvent(event.id));
+        li.appendChild(delBtn);
+
+        eventsUl.appendChild(li);
+      });
+    }
+
+    // Start editing an event
+    function startEditEvent(id) {
+      const event = events.find(e => e.id === id);
+      if (!event) return;
+      editingEventId = id;
+      formTitle.textContent = 'Editar evento';
+      submitBtn.textContent = 'Guardar cambios';
+      cancelEditBtn.classList.remove('hidden');
+
+      eventForm.eventTitle.value = event.title;
+      eventForm.eventDate.value = event.date;
+      eventForm.eventTime.value = event.time;
+      eventForm.eventDescription.value = event.description;
+
+      // Focus first input
+      eventForm.eventTitle.focus();
+    }
+
+    // Cancel editing
+    function cancelEdit() {
+      editingEventId = null;
+      formTitle.textContent = 'Agregar nuevo evento';
+      submitBtn.textContent = 'Agregar Evento';
+      cancelEditBtn.classList.add('hidden');
+      eventForm.reset();
+    }
+
+    // Delete event
+    function deleteEvent(id) {
+      if (!confirm('¿Está seguro de eliminar este evento?')) return;
+      events = events.filter(e => e.id !== id);
+      saveEvents();
+      renderEvents();
+    }
+
+    // Handle form submit
+    eventForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const title = eventForm.eventTitle.value.trim();
+      const date = eventForm.eventDate.value;
+      const time = eventForm.eventTime.value;
+      const description = eventForm.eventDescription.value.trim();
+
+      if (!title || !date || !time || !description) {
+        alert('Por favor, complete todos los campos.');
+        return;
+      }
+
+      if (editingEventId) {
+        // Update existing
+        const idx = events.findIndex(e => e.id === editingEventId);
+        if (idx > -1) {
+          events[idx] = { id: editingEventId, title, date, time, description };
+        }
+        cancelEdit();
+      } else {
+        // Add new
+        const newEvent = {
+          id: crypto.randomUUID(),
+          title, date, time, description
+        };
+        events.push(newEvent);
+      }
+      saveEvents();
+      renderEvents();
+      eventForm.reset();
+      eventForm.eventTitle.focus();
+    });
+
+    cancelEditBtn.addEventListener('click', cancelEdit);
+
+    // Handle login
+    loginBtn.addEventListener('click', () => {
+      const pwd = adminPasswordInput.value;
+      if (pwd === ADMIN_PASSWORD) {
+        loginForm.classList.add('hidden');
+        adminPanel.classList.remove('hidden');
+        adminPasswordInput.value = '';
+        loginError.textContent = '';
+        loadEvents();
+        renderEvents();
+        eventForm.eventTitle.focus();
+      } else {
+        loginError.textContent = 'Contraseña incorrecta. Inténtalo nuevamente.';
+        adminPasswordInput.focus();
+      }
+    });
+
+    adminPasswordInput.addEventListener('keyup', e => {
+      if (e.key === 'Enter') {
+        loginBtn.click();
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>

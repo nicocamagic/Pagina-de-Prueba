@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Venta de Boletos - Métodos de Pago</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #e0e7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        select,
+        input {
+            width: 50%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body align="center">
+    <h1>Venta de Boletos</h1>
+    <div id="evento-info" class="form-section">
+        <strong>Evento seleccionado:</strong> <span id="evento-nombre">Cargando...</span>
+    </div>
+    <div class="form-section">
+        <label for="metodo">Método de pago:</label>
+        <select id="metodo" required>
+            <option value="">Seleccione un método</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="banco">Banco</option>
+        </select>
+    </div>
+
+    <!-- Pago con Tarjeta -->
+    <form id="form-tarjeta" class="form-section hidden">
+        <label for="nombre-tarjeta">Nombre en la tarjeta:</label>
+        <input type="text" id="nombre-tarjeta" required>
+        <label for="numero-tarjeta">Número de tarjeta:</label>
+        <input type="text" id="numero-tarjeta" maxlength="16" required>
+        <label for="fecha-tarjeta">Fecha de expiración:</label>
+        <input type="month" id="fecha-tarjeta" required>
+        <label for="cvv-tarjeta">CVV:</label>
+        <input type="text" id="cvv-tarjeta" maxlength="4" required>
+        <br>
+        <button type="button" onclick="pagarTarjeta()">Pagar con Tarjeta</button>
+    </form>
+
+    <!-- Pago con Banco -->
+    <form id="form-banco" class="form-section hidden">
+        <label for="banco-select">Seleccione su banco:</label>
+        <select id="banco-select" required>
+            <option value="">Seleccione un banco</option>
+            <option value="Nequi">Nequi</option>
+            <option value="bancolombia">Bancolombia</option>
+            <option value="davivienda">Davivienda</option>
+            <option value="bbva">BBVA</option>
+            <option value="banco-de-bogota">Banco de Bogotá</option>
+            <!-- Agrega más bancos si es necesario -->
+        </select>
+        <label for="nombre-banco">Nombre de quien paga:</label>
+        <input type="text" id="nombre-banco" required>
+        <br>
+        <button type="button" onclick="pagarBanco()">Pagar en Banco</button>
+    </form>
+    <center>
+        <a href="CIA-Eventos.html"><button style="cursor: pointer; width: 50%;">Regresar al inicio</button></a>
+    </center>
+
+    <script>
+        // Mostrar solo el nombre (title) del evento guardado en localStorage
+        document.addEventListener('DOMContentLoaded', function () {
+            const eventoStr = localStorage.getItem('cia_events');
+            let nombre = 'No seleccionado';
+            try {
+                // Si es un array de objetos, toma el primero y muestra el title
+                const eventos = JSON.parse(eventoStr);
+                if (Array.isArray(eventos) && eventos.length > 0 && eventos[0].title) {
+                    nombre = eventos[0].title;
+                } else if (eventos && eventos.title) {
+                    // Si es un solo objeto
+                    nombre = eventos.title;
+                }
+            } catch (e) {
+                // Si no es JSON válido, muestra el string tal cual
+                if (eventoStr) nombre = eventoStr;
+            }
+            document.getElementById('evento-nombre').textContent = nombre;
+        });
+
+        // Mostrar formulario según método de pago
+        document.getElementById('metodo').addEventListener('change', function () {
+            document.getElementById('form-tarjeta').classList.add('hidden');
+            document.getElementById('form-banco').classList.add('hidden');
+            if (this.value === 'tarjeta') {
+                document.getElementById('form-tarjeta').classList.remove('hidden');
+            } else if (this.value === 'banco') {
+                document.getElementById('form-banco').classList.remove('hidden');
+            }
+        });
+
+        // Simulación de pago con tarjeta (redirige a una página de pago simulada)
+        function pagarTarjeta() {
+            // Aquí deberías integrar con una pasarela real
+            alert('Redirigiendo a la pasarela de pago con tarjeta...');
+            window.location.href = 'https://www.mercadopago.com.co/checkout/v1/redirect?preference-id=demo';
+        }
+
+        // Simulación de pago con banco (redirige a la página del banco seleccionado)
+        function pagarBanco() {
+            const banco = document.getElementById('banco-select').value;
+            const nombre = document.getElementById('nombre-banco').value;
+            if (!banco || !nombre) {
+                alert('Por favor, complete todos los campos.');
+                return;
+            }
+            // Simulación de APIs de bancos
+            let url = '';
+            switch (banco) {
+                case 'Nequi':
+                    url = 'https://clientes.nequi.com.co/credito';
+                    break;
+                case 'bancolombia':
+                    url = 'https://www.bancolombia.com/personas/solicitudes/pagos';
+                    break;
+                case 'davivienda':
+                    url = 'https://www.davivienda.com/wps/portal/personas/nuevo/solicitudes/pagos';
+                    break;
+                case 'bbva':
+                    url = 'https://www.bbva.com.co/personas/productos/pagos/';
+                    break;
+                case 'banco-de-bogota':
+                    url = 'https://www.bancodebogota.com/wps/portal/banco-de-bogota/bogota/inicio/personas/pagos';
+                    break;
+                default:
+                    url = '#';
+            }
+            alert('Redirigiendo a la página de pagos del banco seleccionado...');
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+
+</html>
